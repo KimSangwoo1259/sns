@@ -8,6 +8,7 @@ import com.fastcampus.sns.repository.UserEntityRepository;
 import com.fastcampus.sns.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,11 @@ public class UserService {
 
     @Value("${jwt.token.expired-time-ms}")
     private Long expiredTimeMs;
+    public User loadUserByUsername(String username) {
+        return userEntityRepository.findByUsername(username).map(User::fromEntity).orElseThrow(
+                () -> new SnsApplicationException(ErrorCode.USER_NOT_FOUNd, String.format("%s not founded", username)));
+    }
+
 
     @Transactional
     public User join(String username, String password) {
